@@ -1,5 +1,4 @@
 from Funcionalidades import Inventory  
-
 def main():
     inv = Inventory()
     print("Bienvenido al simulador de inventario estilo Minecraft!")

@@ -9,17 +9,16 @@ class Slot:
         return f"{self.item} x{self.quantity}" if self.item else "Vacío"
 
 class Inventory:
-    def __init__(self, hotbar_size=9, full_inv_size=27):  # hotbar de 9, inventario total 27
+    def __init__(self, hotbar_size=9, full_inv_size=27):
         self.hotbar_size = hotbar_size
         self.full_inv_size = full_inv_size
         self.hotbar_head = None
         self.current = None
         self.full_inventory = []
-        self.off_hand = Slot()  # Slot para la otra mano
+        self.off_hand = None  # No existe hasta que se active
         self.create_inventory()
 
     def create_inventory(self):
-        # Crear hotbar circular
         previous = None
         for i in range(self.hotbar_size):
             slot = Slot()
@@ -34,7 +33,6 @@ class Inventory:
         previous.next = self.hotbar_head
         self.current = self.hotbar_head
 
-        # Crear el resto del inventario (18 slots adicionales)
         for _ in range(self.hotbar_size, self.full_inv_size):
             self.full_inventory.append(Slot())
 
@@ -47,7 +45,9 @@ class Inventory:
             else:
                 print(f"[{current}]", end="  ")
             current = current.next
-        print(f"\nSlot de la otra mano: [{self.off_hand}]\n")
+        if self.off_hand:
+            print(f"\nSlot de la otra mano: [{self.off_hand}]")
+        print()
 
     def display_full_inventory(self):
         print("\nInventario completo:")
@@ -58,7 +58,9 @@ class Inventory:
                 print(f"[{self.full_inventory[i]}]", end="  ")
             if (i + 1) % 9 == 0:
                 print()
-        print(f"\nSlot de la otra mano: [{self.off_hand}]\n")
+        if self.off_hand:
+            print(f"\nSlot de la otra mano: [{self.off_hand}]")
+        print()
 
     def move_right(self):
         self.current = self.current.next
@@ -83,9 +85,13 @@ class Inventory:
 
     def put_in_offhand(self):
         if self.current.item:
+            if not self.off_hand:
+                self.off_hand = Slot()
+                print("¡Slot de la otra mano desbloqueado!")
             self.off_hand.item = self.current.item
             self.off_hand.quantity = self.current.quantity
             print(f"Moviste {self.current.item} x{self.current.quantity} a la otra mano.")
             self.remove_current_item()
         else:
             print("No hay ítem en el slot actual para mover a la otra mano.")
+
